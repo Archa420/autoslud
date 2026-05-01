@@ -44,7 +44,7 @@
                     @auth
                         <a href="{{ route('dashboard') }}"
                            class="px-4 py-2 text-sm font-medium rounded-xl transition {{ $isDashboard ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
-                            Mani sludinājumi
+                            Mans profils
                         </a>
 
                         <a href="{{ route('favorites.index') }}"
@@ -182,7 +182,7 @@
             @auth
                 <a href="{{ route('dashboard') }}"
                    class="flex items-center rounded-2xl px-4 py-3 text-sm font-medium transition {{ $isDashboard ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100' }}">
-                    Mani sludinājumi
+                    Mans profils
                 </a>
 
                 <a href="{{ route('favorites.index') }}"

@@ -35,9 +35,6 @@
                             <span class="block text-base font-bold text-slate-900">
                                 Autoslud
                             </span>
-                            <span class="block text-xs font-medium text-slate-500">
-                                Auto sludinājumi
-                            </span>
                         </span>
                     </a>
                 </div>
@@ -62,7 +59,7 @@
                     @auth
                         <a href="{{ route('dashboard') }}"
                            class="{{ $navBase }} {{ $navInactive }}">
-                            Mani sludinājumi
+                            Mans profils
                         </a>
 
                         <a href="{{ route('favorites.index') }}"

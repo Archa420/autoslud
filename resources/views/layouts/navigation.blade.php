@@ -1,77 +1,119 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
-    <!-- Primary Navigation Menu -->
+<nav x-data="{ open: false }" class="sticky top-0 z-50 border-b border-slate-200/70 bg-white/80 backdrop-blur-xl shadow-sm">
+    @php
+        $isHome = request()->routeIs('home');
+        $isAds = request()->routeIs('ads.index') || request()->routeIs('ads.show');
+        $isIzsoles = request()->routeIs('izsoles');
+        $isDashboard = request()->routeIs('dashboard');
+        $isFavorites = request()->routeIs('favorites.index');
+        $isAdsCreate = request()->routeIs('ads.create');
+    @endphp
+
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
+        <div class="flex h-20 items-center justify-between">
 
-            <div class="flex">
+            <!-- Left side -->
+            <div class="flex items-center gap-8">
                 <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('home') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
-                    </a>
-                </div>
+                <a href="{{ route('home') }}" class="flex items-center gap-3 group">
+                    <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 via-violet-500 to-purple-500 text-white shadow-md group-hover:scale-105 transition duration-200">
+                        <x-application-logo class="h-6 w-6 fill-current text-white" />
+                    </div>
+                    <div class="hidden sm:block">
+                        <div class="text-lg font-bold text-slate-900 leading-tight">TavaPlatforma</div>
+                        <div class="text-xs text-slate-500 -mt-0.5">Sludinājumi un izsoles</div>
+                    </div>
+                </a>
 
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-
-                    <x-nav-link :href="route('home')" :active="request()->routeIs('home')">
+                <!-- Desktop Navigation -->
+                <div class="hidden lg:flex items-center rounded-2xl border border-slate-200 bg-white/70 px-2 py-2 shadow-sm">
+                    <a href="{{ route('home') }}"
+                       class="px-4 py-2 text-sm font-medium rounded-xl transition {{ $isHome ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
                         Sākums
-                    </x-nav-link>
+                    </a>
 
-                    <x-nav-link :href="route('ads.index')" :active="request()->routeIs('ads.index') || request()->routeIs('ads.show')">
+                    <a href="{{ route('ads.index') }}"
+                       class="px-4 py-2 text-sm font-medium rounded-xl transition {{ $isAds ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
                         Sludinājumi
-                    </x-nav-link>
+                    </a>
 
-                    <x-nav-link :href="route('izsoles')" :active="request()->routeIs('izsoles')">
+                    <a href="{{ route('izsoles') }}"
+                       class="px-4 py-2 text-sm font-medium rounded-xl transition {{ $isIzsoles ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
                         Izsoles
-                    </x-nav-link>
+                    </a>
 
                     @auth
-                        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                        <a href="{{ route('dashboard') }}"
+                           class="px-4 py-2 text-sm font-medium rounded-xl transition {{ $isDashboard ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
                             Mani sludinājumi
-                        </x-nav-link>
+                        </a>
 
-                        <x-nav-link :href="route('favorites.index')" :active="request()->routeIs('favorites.index')">
+                        <a href="{{ route('favorites.index') }}"
+                           class="px-4 py-2 text-sm font-medium rounded-xl transition {{ $isFavorites ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
                             Favorīti
-                        </x-nav-link>
+                        </a>
                     @endauth
-
                 </div>
             </div>
 
-            <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <!-- Right side -->
+            <div class="hidden sm:flex items-center gap-3">
                 @auth
-                    <x-dropdown align="right" width="48">
-                        <x-slot name="trigger">
-                            <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                                <div>{{ Auth::user()->name }}</div>
+                    <a href="{{ route('ads.create') }}"
+                       class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md hover:shadow-lg hover:scale-[1.02] transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                        </svg>
+                        Pievienot sludinājumu
+                    </a>
 
-                                <div class="ms-1">
-                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                    </svg>
+                    <x-dropdown align="right" width="64">
+                        <x-slot name="trigger">
+                            <button class="inline-flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-3 py-2.5 shadow-sm hover:shadow-md hover:border-slate-300 transition">
+                                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-sm font-bold text-slate-700">
+                                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                                 </div>
+
+                                <div class="text-left">
+                                    <div class="text-sm font-semibold text-slate-800 leading-tight">
+                                        {{ Auth::user()->name }}
+                                    </div>
+                                    <div class="text-xs text-slate-500">
+                                        Mans profils
+                                    </div>
+                                </div>
+
+                                <svg class="h-4 w-4 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.51a.75.75 0 01-1.08 0l-4.25-4.51a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                                </svg>
                             </button>
                         </x-slot>
 
                         <x-slot name="content">
+                            <div class="px-4 py-3 border-b border-slate-100">
+                                <div class="text-sm font-semibold text-slate-800">{{ Auth::user()->name }}</div>
+                                <div class="text-xs text-slate-500 mt-0.5">{{ Auth::user()->email }}</div>
+                            </div>
+
                             <x-dropdown-link :href="route('profile.edit')">
                                 Profils
                             </x-dropdown-link>
 
-                            <x-dropdown-link :href="route('ads.create')">
-                                Pievienot sludinājumu
+                            <x-dropdown-link :href="route('dashboard')">
+                                Mani sludinājumi
                             </x-dropdown-link>
 
                             <x-dropdown-link :href="route('favorites.index')">
                                 Favorīti
                             </x-dropdown-link>
 
-                            <!-- Authentication -->
+                            <x-dropdown-link :href="route('ads.create')">
+                                Pievienot sludinājumu
+                            </x-dropdown-link>
+
+                            <div class="border-t border-slate-100 my-1"></div>
+
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-
                                 <x-dropdown-link :href="route('logout')"
                                                  onclick="event.preventDefault(); this.closest('form').submit();">
                                     Iziet
@@ -80,97 +122,121 @@
                         </x-slot>
                     </x-dropdown>
                 @else
-                    <div class="flex items-center gap-4">
-                        <a href="{{ route('login') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">
-                            Pieslēgties
-                        </a>
+                    <a href="{{ route('login') }}"
+                       class="rounded-2xl px-4 py-2.5 text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">
+                        Pieslēgties
+                    </a>
 
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">
-                                Reģistrēties
-                            </a>
-                        @endif
-                    </div>
+                    @if (Route::has('register'))
+                        <a href="{{ route('register') }}"
+                           class="rounded-2xl bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 transition">
+                            Reģistrēties
+                        </a>
+                    @endif
                 @endauth
             </div>
 
-            <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
+            <!-- Mobile hamburger -->
+            <div class="flex items-center sm:hidden">
+                <button @click="open = !open"
+                        class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white p-2.5 text-slate-600 shadow-sm hover:bg-slate-50 hover:text-slate-900 transition">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        <path :class="{ 'hidden': open, 'inline-flex': !open }"
+                              class="inline-flex"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M4 6h16M4 12h16M4 18h16" />
+                        <path :class="{ 'hidden': !open, 'inline-flex': open }"
+                              class="hidden"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
-
         </div>
     </div>
 
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')">
+    <!-- Mobile menu -->
+    <div x-show="open"
+         x-transition
+         class="sm:hidden border-t border-slate-200 bg-white/95 backdrop-blur-xl">
+        <div class="px-4 py-4 space-y-2">
+            <a href="{{ route('home') }}"
+               class="flex items-center rounded-2xl px-4 py-3 text-sm font-medium transition {{ $isHome ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100' }}">
                 Sākums
-            </x-responsive-nav-link>
+            </a>
 
-            <x-responsive-nav-link :href="route('ads.index')" :active="request()->routeIs('ads.index') || request()->routeIs('ads.show')">
+            <a href="{{ route('ads.index') }}"
+               class="flex items-center rounded-2xl px-4 py-3 text-sm font-medium transition {{ $isAds ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100' }}">
                 Sludinājumi
-            </x-responsive-nav-link>
+            </a>
 
-            <x-responsive-nav-link :href="route('izsoles')" :active="request()->routeIs('izsoles')">
+            <a href="{{ route('izsoles') }}"
+               class="flex items-center rounded-2xl px-4 py-3 text-sm font-medium transition {{ $isIzsoles ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100' }}">
                 Izsoles
-            </x-responsive-nav-link>
+            </a>
 
             @auth
-                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                <a href="{{ route('dashboard') }}"
+                   class="flex items-center rounded-2xl px-4 py-3 text-sm font-medium transition {{ $isDashboard ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100' }}">
                     Mani sludinājumi
-                </x-responsive-nav-link>
+                </a>
 
-                <x-responsive-nav-link :href="route('favorites.index')" :active="request()->routeIs('favorites.index')">
+                <a href="{{ route('favorites.index') }}"
+                   class="flex items-center rounded-2xl px-4 py-3 text-sm font-medium transition {{ $isFavorites ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100' }}">
                     Favorīti
-                </x-responsive-nav-link>
+                </a>
 
-                <x-responsive-nav-link :href="route('ads.create')" :active="request()->routeIs('ads.create')">
+                <a href="{{ route('ads.create') }}"
+                   class="flex items-center justify-center rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-3 text-sm font-semibold text-white shadow-sm">
                     Pievienot sludinājumu
-                </x-responsive-nav-link>
+                </a>
             @endauth
         </div>
 
-        <!-- Responsive Settings Options -->
         @auth
-            <div class="pt-4 pb-1 border-t border-gray-200">
-                <div class="px-4">
-                    <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                    <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
+            <div class="border-t border-slate-200 px-4 py-4">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-sm font-bold text-slate-700">
+                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                    </div>
+                    <div>
+                        <div class="text-sm font-semibold text-slate-800">{{ Auth::user()->name }}</div>
+                        <div class="text-xs text-slate-500">{{ Auth::user()->email }}</div>
+                    </div>
                 </div>
 
-                <div class="mt-3 space-y-1">
-                    <x-responsive-nav-link :href="route('profile.edit')">
+                <div class="space-y-2">
+                    <a href="{{ route('profile.edit') }}"
+                       class="flex items-center rounded-2xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-100 transition">
                         Profils
-                    </x-responsive-nav-link>
+                    </a>
 
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-
-                        <x-responsive-nav-link :href="route('logout')"
-                                               onclick="event.preventDefault(); this.closest('form').submit();">
+                        <a href="{{ route('logout') }}"
+                           onclick="event.preventDefault(); this.closest('form').submit();"
+                           class="flex items-center rounded-2xl px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 transition">
                             Iziet
-                        </x-responsive-nav-link>
+                        </a>
                     </form>
                 </div>
             </div>
         @else
-            <div class="pt-4 pb-3 border-t border-gray-200 space-y-1">
-                <x-responsive-nav-link :href="route('login')">
+            <div class="border-t border-slate-200 px-4 py-4 space-y-2">
+                <a href="{{ route('login') }}"
+                   class="flex items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold text-slate-700 border border-slate-200 hover:bg-slate-50 transition">
                     Pieslēgties
-                </x-responsive-nav-link>
+                </a>
 
                 @if (Route::has('register'))
-                    <x-responsive-nav-link :href="route('register')">
+                    <a href="{{ route('register') }}"
+                       class="flex items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white hover:bg-slate-800 transition">
                         Reģistrēties
-                    </x-responsive-nav-link>
+                    </a>
                 @endif
             </div>
         @endauth

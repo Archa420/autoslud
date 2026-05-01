@@ -109,18 +109,35 @@ Route::prefix('sludinajumi')->group(function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
-        $ads = auth()->user()
+        $user = auth()->user();
+
+        $ads = $user
             ->ads()
             ->with(['primaryImage', 'images', 'auction'])
             ->latest()
             ->paginate(12);
 
-        return view('dashboard', compact('ads'));
+        $userBids = $user
+            ->bids()
+            ->with([
+                'auction.ad.primaryImage',
+                'auction.ad.images',
+                'auction.highestBid',
+            ])
+            ->latest()
+            ->get()
+            ->groupBy('auction_id');
+
+        return view('dashboard', compact('ads', 'userBids'));
     })->name('dashboard');
 
     Route::post('/izsoles/{auction}/bid', [BidController::class, 'store'])
         ->whereNumber('auction')
         ->name('bids.store');
+
+    Route::delete('/izsoles/{auction}/bid', [BidController::class, 'destroy'])
+        ->whereNumber('auction')
+        ->name('bids.destroy');
 
     Route::get('/favoriti', [FavoriteController::class, 'index'])
         ->name('favorites.index');
@@ -145,37 +162,31 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('messages.reply');
 
     Route::prefix('admin')->group(function () {
-    Route::get('/lietotaji', [AdminController::class, 'users'])
-        ->name('admin.users');
+        Route::get('/lietotaji', [AdminController::class, 'users'])
+            ->name('admin.users');
 
-    Route::patch('/lietotaji/{user}/bloket', [AdminController::class, 'toggleBlock'])
-        ->whereNumber('user')
-        ->name('admin.users.toggle-block');
+        Route::patch('/lietotaji/{user}/bloket', [AdminController::class, 'toggleBlock'])
+            ->whereNumber('user')
+            ->name('admin.users.toggle-block');
 
-    Route::get('/sludinajumi', [AdminController::class, 'ads'])
-        ->name('admin.ads');
+        Route::get('/sludinajumi', [AdminController::class, 'ads'])
+            ->name('admin.ads');
 
-    Route::delete('/sludinajumi/{ad}', [AdminController::class, 'destroyAd'])
-        ->whereNumber('ad')
-        ->name('admin.ads.destroy');
+        Route::delete('/sludinajumi/{ad}', [AdminController::class, 'destroyAd'])
+            ->whereNumber('ad')
+            ->name('admin.ads.destroy');
 
-    Route::get('/izsoles', [AdminController::class, 'auctions'])
-        ->name('admin.auctions');
-
-    Route::delete('/izsoles/{auction}', [AdminController::class, 'destroyAuction'])
-        ->whereNumber('auction')
-        ->name('admin.auctions.destroy');
         Route::get('/izsoles', [AdminController::class, 'auctions'])
-    ->name('admin.auctions');
+            ->name('admin.auctions');
 
-Route::patch('/izsoles/{auction}/status', [AdminController::class, 'updateAuctionStatus'])
-    ->whereNumber('auction')
-    ->name('admin.auctions.status');
+        Route::patch('/izsoles/{auction}/status', [AdminController::class, 'updateAuctionStatus'])
+            ->whereNumber('auction')
+            ->name('admin.auctions.status');
 
-Route::delete('/izsoles/{auction}', [AdminController::class, 'destroyAuction'])
-    ->whereNumber('auction')
-    ->name('admin.auctions.destroy');
-});
+        Route::delete('/izsoles/{auction}', [AdminController::class, 'destroyAuction'])
+            ->whereNumber('auction')
+            ->name('admin.auctions.destroy');
+    });
 
     Route::get('/profile', [ProfileController::class, 'edit'])
         ->name('profile.edit');

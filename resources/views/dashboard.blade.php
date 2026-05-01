@@ -15,7 +15,7 @@
         </h1>
 
         <p class="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600">
-            Pārvaldi savu profilu, pievienotos sludinājumus un favorītus vienuviet.
+            Pārvaldi savu profilu, pievienotos sludinājumus, favorītus un izsoļu likmes vienuviet.
         </p>
     </div>
 
@@ -28,6 +28,12 @@
     @if (session('success'))
         <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-medium text-emerald-800">
             {{ session('success') }}
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-medium text-red-700">
+            {{ session('error') }}
         </div>
     @endif
 
@@ -61,6 +67,13 @@
                     <span class="text-slate-500">Sludinājumi</span>
                     <span class="font-semibold text-slate-900">
                         {{ $ads->total() }}
+                    </span>
+                </div>
+
+                <div class="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3">
+                    <span class="text-slate-500">Izsoles ar likmēm</span>
+                    <span class="font-semibold text-slate-900">
+                        {{ isset($userBids) ? $userBids->count() : 0 }}
                     </span>
                 </div>
 
@@ -128,6 +141,163 @@
                     </p>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-7">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <h2 class="text-lg font-semibold text-slate-950">
+                    Manas likmes
+                </h2>
+
+                <p class="mt-1 text-sm text-slate-500">
+                    Izsoles, kurās esi veicis likmes.
+                </p>
+            </div>
+
+            <a href="{{ route('izsoles') }}"
+               class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                Apskatīt izsoles
+            </a>
+        </div>
+
+        <div class="mt-6">
+            @if(isset($userBids) && $userBids->count())
+                <div class="grid gap-3">
+                    @foreach($userBids as $auctionId => $bids)
+                        @php
+                            $latestBid = $bids->first();
+                            $auction = $latestBid->auction;
+                            $ad = $auction?->ad;
+                            $highestBid = $auction?->highestBid;
+                            $currentBid = $highestBid?->amount ?? $auction?->current_bid ?? $auction?->starting_bid ?? 0;
+                            $isWinning = $highestBid && $highestBid->user_id === $user->id;
+                            $img = $ad?->primaryImage?->path ?? $ad?->images?->first()?->path;
+                            $userBidCount = $bids->count();
+                            $auctionEnded = $auction?->ends_at && $auction->ends_at->isPast();
+                        @endphp
+
+                        <article class="rounded-2xl border border-slate-200 bg-slate-50 p-3 transition hover:border-slate-300 hover:bg-white">
+                            <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                                <div class="flex min-w-0 flex-1 items-center gap-4">
+                                    <a href="{{ $ad ? route('ads.show', $ad) : '#' }}"
+                                       class="h-20 w-28 shrink-0 overflow-hidden rounded-xl bg-slate-100">
+                                        @if($img)
+                                            <img
+                                                src="{{ asset('storage/' . $img) }}"
+                                                alt="{{ $ad?->title }}"
+                                                class="h-full w-full object-cover transition duration-300 hover:scale-105"
+                                                loading="lazy"
+                                            >
+                                        @else
+                                            <div class="flex h-full w-full items-center justify-center px-2 text-center text-[11px] text-slate-400">
+                                                Nav bildes
+                                            </div>
+                                        @endif
+                                    </a>
+
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex flex-wrap items-center gap-2">
+                                            <h3 class="line-clamp-1 text-base font-semibold text-slate-950">
+                                                {{ $ad?->title ?? 'Sludinājums nav pieejams' }}
+                                            </h3>
+
+                                            @if($auctionEnded)
+                                                <span class="rounded-full border border-slate-300 bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-700">
+                                                    Beigusies
+                                                </span>
+                                            @elseif($isWinning)
+                                                <span class="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-700">
+                                                    Tu esi vadībā
+                                                </span>
+                                            @else
+                                                <span class="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[11px] font-bold text-amber-700">
+                                                    Pārsolīts
+                                                </span>
+                                            @endif
+                                        </div>
+
+                                        @if($ad)
+                                            <p class="mt-1 line-clamp-1 text-xs text-slate-500">
+                                                {{ $ad->brand }} {{ $ad->model }} · {{ $ad->year }} · {{ number_format($ad->mileage_km ?? 0, 0, '.', ' ') }} km
+                                            </p>
+                                        @endif
+
+                                        <div class="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm">
+                                            <p class="text-slate-500">
+                                                Cena:
+                                                <span class="font-bold text-slate-950">
+                                                    {{ number_format($currentBid, 2, '.', ' ') }} €
+                                                </span>
+                                            </p>
+
+                                            <p class="text-slate-500">
+                                                Tava likme:
+                                                <span class="font-bold text-slate-950">
+                                                    {{ number_format($latestBid->amount, 2, '.', ' ') }} €
+                                                </span>
+                                            </p>
+
+                                            <p class="text-slate-500">
+                                                Beidzas:
+                                                <span class="font-bold text-slate-950">
+                                                    {{ $auction?->ends_at ? $auction->ends_at->format('d.m.Y H:i') : '—' }}
+                                                </span>
+                                            </p>
+
+                                            <p class="text-slate-500">
+                                                Likmes:
+                                                <span class="font-bold text-slate-950">
+                                                    {{ $userBidCount }}
+                                                </span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @if($ad && $auction)
+                                    <div class="flex shrink-0 gap-2 md:flex-col md:items-end">
+                                        <a href="{{ route('ads.show', $ad) }}"
+                                           class="inline-flex items-center justify-center rounded-xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800">
+                                            Atvērt
+                                        </a>
+
+                                        @if(!$auctionEnded && $auction->status === 'active')
+                                            <form method="POST"
+                                                  action="{{ route('bids.destroy', $auction) }}"
+                                                  onsubmit="return confirm('Vai tiešām vēlies noņemt savu likmi no šīs izsoles?');">
+                                                @csrf
+                                                @method('DELETE')
+
+                                                <button type="submit"
+                                                        class="inline-flex items-center justify-center rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-100">
+                                                    Noņemt
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                @endif
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+            @else
+                <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-10 text-center">
+                    <h3 class="text-base font-semibold text-slate-800">
+                        Tu vēl neesi veicis nevienu likmi
+                    </h3>
+
+                    <p class="mt-2 text-sm text-slate-500">
+                        Kad piedalīsies kādā auto izsolē, tava likme parādīsies šeit.
+                    </p>
+
+                    <a href="{{ route('izsoles') }}"
+                       class="mt-5 inline-flex items-center justify-center rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800">
+                        Apskatīt izsoles
+                    </a>
+                </div>
+            @endif
         </div>
     </section>
 

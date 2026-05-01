@@ -76,4 +76,47 @@ class BidController extends Controller
 
         return back()->with('success', 'Solījums veiksmīgi pievienots!');
     }
+
+    public function destroy(Auction $auction)
+    {
+        if ($auction->status !== 'active') {
+            return back()->with('error', 'Šī izsole vairs nav aktīva, tāpēc likmi nevar noņemt.');
+        }
+
+        if ($auction->ends_at && now()->greaterThanOrEqualTo($auction->ends_at)) {
+            $auction->update([
+                'status' => 'finished',
+            ]);
+
+            return back()->with('error', 'Šī izsole jau ir beigusies, tāpēc likmi nevar noņemt.');
+        }
+
+        try {
+            DB::transaction(function () use ($auction) {
+                $auction = Auction::where('id', $auction->id)
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+                $deleted = Bid::where('auction_id', $auction->id)
+                    ->where('user_id', Auth::id())
+                    ->delete();
+
+                if ($deleted === 0) {
+                    throw new \Exception('Tev nav likmes šajā izsolē.');
+                }
+
+                $highestBid = Bid::where('auction_id', $auction->id)
+                    ->orderByDesc('amount')
+                    ->first();
+
+                $auction->update([
+                    'current_bid' => $highestBid?->amount ?? $auction->starting_bid,
+                ]);
+            });
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
+
+        return back()->with('success', 'Tava likme tika noņemta.');
+    }
 }

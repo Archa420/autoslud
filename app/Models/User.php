@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Ad;
+use Laravel\Cashier\Billable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -10,7 +11,7 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, Billable;
 
     protected $fillable = [
         'username',
@@ -42,6 +43,11 @@ class User extends Authenticatable
     public function setNameAttribute($value): void
     {
         $this->attributes['username'] = $value;
+    }
+
+    public function hasAuctionSubscription(): bool
+    {
+        return $this->subscribed('auction_access');
     }
 
     public function favorites(): HasMany

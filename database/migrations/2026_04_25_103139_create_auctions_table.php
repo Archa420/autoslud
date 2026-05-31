@@ -18,7 +18,8 @@ return new class extends Migration
 
             $table->decimal('starting_bid', 10, 2);
             $table->decimal('current_bid', 10, 2)->nullable();
-            $table->decimal('minimum_bid_step', 10, 2)->default(1.00);
+            $table->decimal('minimum_bid_step', 10, 2)->default(50.00);
+            $table->decimal('buyout_price', 10, 2)->nullable();
 
             $table->timestamp('starts_at')->nullable();
             $table->timestamp('ends_at');

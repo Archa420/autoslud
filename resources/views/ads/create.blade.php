@@ -57,7 +57,7 @@
 @endphp
 
 <div
-    class="mx-auto max-w-3xl"
+    class="mx-auto max-w-3xl text-white"
     x-data="{
         isAuction: {{ old('is_auction') ? 'true' : 'false' }},
         selectedBrand: @js(old('brand', '')),
@@ -123,36 +123,45 @@
         }
     }"
 >
-    <div class="flex items-start justify-between gap-4">
+    <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
-            <h1 class="text-2xl font-semibold tracking-tight text-slate-950 md:text-3xl">
+            <div class="mb-3 inline-flex items-center gap-2 rounded-full border border-amber-400/20 bg-amber-400/10 px-4 py-1.5">
+                <span class="h-1.5 w-1.5 rounded-full bg-amber-400"></span>
+                <span class="text-xs font-bold uppercase tracking-[0.18em] text-amber-200/80">
+                    Jauns sludinājums
+                </span>
+            </div>
+
+            <h1 class="text-4xl font-black uppercase tracking-tight text-white md:text-6xl"
+                style="font-family:'Bebas Neue', sans-serif;">
                 Pievienot sludinājumu
             </h1>
 
-            <p class="mt-2 text-slate-600">
+            <p class="mt-2 max-w-2xl text-sm leading-relaxed text-slate-400">
                 Aizpildi auto informāciju, pievieno attēlus un izvēlies pārdošanas veidu.
             </p>
         </div>
 
         <a href="{{ route('ads.index') }}"
-           class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+           class="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-bold text-slate-300 transition hover:bg-white/10 hover:text-white active:scale-95">
             Atpakaļ
         </a>
     </div>
 
     @if($errors->any())
-        <div class="mt-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div class="mt-6 rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
             {{ $errors->first() }}
         </div>
     @endif
 
-    <div class="mt-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <form method="POST" action="{{ route('ads.store') }}" class="space-y-6" enctype="multipart/form-data">
+    <div class="mt-6 rounded-3xl border border-white/10 bg-white/[.05] p-6 shadow-2xl shadow-black/20 backdrop-blur-xl">
+        <form method="POST" action="{{ route('ads.store') }}" class="space-y-7" enctype="multipart/form-data">
             @csrf
 
             <section class="space-y-4">
                 <div>
-                    <h2 class="text-lg font-semibold text-slate-950">
+                    <h2 class="text-2xl font-black uppercase tracking-tight text-white"
+                        style="font-family:'Bebas Neue', sans-serif;">
                         Sludinājuma informācija
                     </h2>
                     <p class="mt-1 text-sm text-slate-500">
@@ -161,31 +170,32 @@
                 </div>
 
                 <div>
-                    <label class="text-sm font-semibold text-slate-800">Virsraksts</label>
+                    <label class="text-sm font-bold text-slate-300">Virsraksts</label>
                     <input
                         name="title"
                         value="{{ old('title') }}"
                         required
-                        class="mt-2 w-full rounded-xl border-slate-300 focus:border-amber-400 focus:ring-amber-200"
+                        class="mt-2 w-full rounded-2xl border-white/10 bg-slate-950/70 text-white placeholder:text-slate-500 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
                         placeholder="Piemēram: BMW 320d F30"
                     >
-                    @error('title') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                    @error('title') <p class="mt-1 text-sm text-red-300">{{ $message }}</p> @enderror
                 </div>
 
                 <div>
-                    <label class="text-sm font-semibold text-slate-800">Apraksts</label>
+                    <label class="text-sm font-bold text-slate-300">Apraksts</label>
                     <textarea
                         name="description"
                         rows="5"
-                        class="mt-2 w-full rounded-xl border-slate-300 focus:border-amber-400 focus:ring-amber-200"
+                        class="mt-2 w-full rounded-2xl border-white/10 bg-slate-950/70 text-white placeholder:text-slate-500 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
                         placeholder="Apraksti auto stāvokli, komplektāciju, remontus un citus svarīgus faktus..."
                     >{{ old('description') }}</textarea>
-                    @error('description') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                    @error('description') <p class="mt-1 text-sm text-red-300">{{ $message }}</p> @enderror
                 </div>
             </section>
 
-            <section class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-                <h2 class="text-lg font-semibold text-slate-950">
+            <section class="rounded-3xl border border-white/10 bg-slate-950/50 p-5">
+                <h2 class="text-2xl font-black uppercase tracking-tight text-white"
+                    style="font-family:'Bebas Neue', sans-serif;">
                     Auto informācija
                 </h2>
 
@@ -195,41 +205,41 @@
 
                 <div class="mt-5 grid gap-4 sm:grid-cols-2">
                     <div>
-                        <label class="text-sm font-semibold text-slate-800">Marka</label>
+                        <label class="text-sm font-bold text-slate-300">Marka</label>
                         <select
                             name="brand"
                             x-model="selectedBrand"
                             @change="resetModel()"
                             required
-                            class="mt-2 w-full rounded-xl border-slate-300 bg-white focus:border-amber-400 focus:ring-amber-200"
+                            class="mt-2 w-full rounded-2xl border-white/10 bg-slate-950/70 text-white focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
                         >
-                            <option value="">Izvēlies marku</option>
+                            <option class="bg-slate-950" value="">Izvēlies marku</option>
                             @foreach(array_keys($brandModels) as $brand)
-                                <option value="{{ $brand }}">{{ $brand }}</option>
+                                <option class="bg-slate-950" value="{{ $brand }}">{{ $brand }}</option>
                             @endforeach
                         </select>
-                        @error('brand') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                        @error('brand') <p class="mt-1 text-sm text-red-300">{{ $message }}</p> @enderror
                     </div>
 
                     <div>
-                        <label class="text-sm font-semibold text-slate-800">Modelis</label>
+                        <label class="text-sm font-bold text-slate-300">Modelis</label>
                         <select
                             name="model"
                             x-model="selectedModel"
                             required
                             :disabled="!selectedBrand"
-                            class="mt-2 w-full rounded-xl border-slate-300 bg-white focus:border-amber-400 focus:ring-amber-200 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
+                            class="mt-2 w-full rounded-2xl border-white/10 bg-slate-950/70 text-white focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 disabled:cursor-not-allowed disabled:bg-slate-900 disabled:text-slate-600"
                         >
-                            <option value="">Izvēlies modeli</option>
+                            <option class="bg-slate-950" value="">Izvēlies modeli</option>
                             <template x-for="model in models" :key="model">
-                                <option :value="model" x-text="model"></option>
+                                <option class="bg-slate-950" :value="model" x-text="model"></option>
                             </template>
                         </select>
-                        @error('model') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                        @error('model') <p class="mt-1 text-sm text-red-300">{{ $message }}</p> @enderror
                     </div>
 
                     <div>
-                        <label class="text-sm font-semibold text-slate-800">Gads</label>
+                        <label class="text-sm font-bold text-slate-300">Gads</label>
                         <input
                             type="number"
                             name="year"
@@ -237,14 +247,14 @@
                             required
                             min="1950"
                             max="{{ date('Y') + 1 }}"
-                            class="mt-2 w-full rounded-xl border-slate-300 bg-white focus:border-amber-400 focus:ring-amber-200"
+                            class="mt-2 w-full rounded-2xl border-white/10 bg-slate-950/70 text-white placeholder:text-slate-500 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
                             placeholder="Piemēram: 2016"
                         >
-                        @error('year') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                        @error('year') <p class="mt-1 text-sm text-red-300">{{ $message }}</p> @enderror
                     </div>
 
                     <div>
-                        <label class="text-sm font-semibold text-slate-800">Nobraukums (km)</label>
+                        <label class="text-sm font-bold text-slate-300">Nobraukums (km)</label>
                         <input
                             type="number"
                             name="mileage_km"
@@ -252,14 +262,14 @@
                             required
                             min="0"
                             max="2000000"
-                            class="mt-2 w-full rounded-xl border-slate-300 bg-white focus:border-amber-400 focus:ring-amber-200"
+                            class="mt-2 w-full rounded-2xl border-white/10 bg-slate-950/70 text-white placeholder:text-slate-500 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
                             placeholder="Piemēram: 245000"
                         >
-                        @error('mileage_km') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                        @error('mileage_km') <p class="mt-1 text-sm text-red-300">{{ $message }}</p> @enderror
                     </div>
 
                     <div>
-                        <label class="text-sm font-semibold text-slate-800">Motora tilpums (cc)</label>
+                        <label class="text-sm font-bold text-slate-300">Motora tilpums (cc)</label>
                         <input
                             type="number"
                             name="engine_cc"
@@ -267,43 +277,43 @@
                             required
                             min="500"
                             max="9000"
-                            class="mt-2 w-full rounded-xl border-slate-300 bg-white focus:border-amber-400 focus:ring-amber-200"
+                            class="mt-2 w-full rounded-2xl border-white/10 bg-slate-950/70 text-white placeholder:text-slate-500 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
                             placeholder="Piemēram: 1998"
                         >
-                        @error('engine_cc') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                        @error('engine_cc') <p class="mt-1 text-sm text-red-300">{{ $message }}</p> @enderror
                     </div>
 
                     <div>
-                        <label class="text-sm font-semibold text-slate-800">Krāsa</label>
+                        <label class="text-sm font-bold text-slate-300">Krāsa</label>
                         <input
                             name="color"
                             value="{{ old('color') }}"
                             required
-                            class="mt-2 w-full rounded-xl border-slate-300 bg-white focus:border-amber-400 focus:ring-amber-200"
+                            class="mt-2 w-full rounded-2xl border-white/10 bg-slate-950/70 text-white placeholder:text-slate-500 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
                             placeholder="Piemēram: Melna"
                         >
-                        @error('color') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                        @error('color') <p class="mt-1 text-sm text-red-300">{{ $message }}</p> @enderror
                     </div>
 
                     <div>
-                        <label class="text-sm font-semibold text-slate-800">Degvielas tips</label>
+                        <label class="text-sm font-bold text-slate-300">Degvielas tips</label>
                         <select
                             name="fuel_type"
                             required
-                            class="mt-2 w-full rounded-xl border-slate-300 bg-white focus:border-amber-400 focus:ring-amber-200"
+                            class="mt-2 w-full rounded-2xl border-white/10 bg-slate-950/70 text-white focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
                         >
-                            <option value="">Izvēlies</option>
+                            <option class="bg-slate-950" value="">Izvēlies</option>
                             @foreach($fuelTypes as $key => $label)
-                                <option value="{{ $key }}" @selected(old('fuel_type') === $key)>
+                                <option class="bg-slate-950" value="{{ $key }}" @selected(old('fuel_type') === $key)>
                                     {{ $label }}
                                 </option>
                             @endforeach
                         </select>
-                        @error('fuel_type') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                        @error('fuel_type') <p class="mt-1 text-sm text-red-300">{{ $message }}</p> @enderror
                     </div>
 
                     <div>
-                        <label class="text-sm font-semibold text-slate-800">Durvju skaits</label>
+                        <label class="text-sm font-bold text-slate-300">Durvju skaits</label>
                         <input
                             type="number"
                             name="doors_count"
@@ -311,31 +321,31 @@
                             required
                             min="2"
                             max="6"
-                            class="mt-2 w-full rounded-xl border-slate-300 bg-white focus:border-amber-400 focus:ring-amber-200"
+                            class="mt-2 w-full rounded-2xl border-white/10 bg-slate-950/70 text-white placeholder:text-slate-500 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
                             placeholder="Piemēram: 5"
                         >
-                        @error('doors_count') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                        @error('doors_count') <p class="mt-1 text-sm text-red-300">{{ $message }}</p> @enderror
                     </div>
 
                     <div>
-                        <label class="text-sm font-semibold text-slate-800">Kārbas tips</label>
+                        <label class="text-sm font-bold text-slate-300">Kārbas tips</label>
                         <select
                             name="gearbox_type"
                             required
-                            class="mt-2 w-full rounded-xl border-slate-300 bg-white focus:border-amber-400 focus:ring-amber-200"
+                            class="mt-2 w-full rounded-2xl border-white/10 bg-slate-950/70 text-white focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
                         >
-                            <option value="">Izvēlies</option>
+                            <option class="bg-slate-950" value="">Izvēlies</option>
                             @foreach($gearboxTypes as $key => $label)
-                                <option value="{{ $key }}" @selected(old('gearbox_type') === $key)>
+                                <option class="bg-slate-950" value="{{ $key }}" @selected(old('gearbox_type') === $key)>
                                     {{ $label }}
                                 </option>
                             @endforeach
                         </select>
-                        @error('gearbox_type') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                        @error('gearbox_type') <p class="mt-1 text-sm text-red-300">{{ $message }}</p> @enderror
                     </div>
 
                     <div>
-                        <label class="text-sm font-semibold text-slate-800">Ātrumu skaits</label>
+                        <label class="text-sm font-bold text-slate-300">Ātrumu skaits</label>
                         <input
                             type="number"
                             name="gears_count"
@@ -343,55 +353,56 @@
                             required
                             min="3"
                             max="10"
-                            class="mt-2 w-full rounded-xl border-slate-300 bg-white focus:border-amber-400 focus:ring-amber-200"
+                            class="mt-2 w-full rounded-2xl border-white/10 bg-slate-950/70 text-white placeholder:text-slate-500 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
                             placeholder="Piemēram: 6"
                         >
-                        @error('gears_count') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                        @error('gears_count') <p class="mt-1 text-sm text-red-300">{{ $message }}</p> @enderror
                     </div>
 
                     <div>
-                        <label class="text-sm font-semibold text-slate-800">Virsbūves tips</label>
+                        <label class="text-sm font-bold text-slate-300">Virsbūves tips</label>
                         <select
                             name="body_type"
-                            class="mt-2 w-full rounded-xl border-slate-300 bg-white focus:border-amber-400 focus:ring-amber-200"
+                            class="mt-2 w-full rounded-2xl border-white/10 bg-slate-950/70 text-white focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
                         >
-                            <option value="">Izvēlies</option>
+                            <option class="bg-slate-950" value="">Izvēlies</option>
                             @foreach($bodyTypes as $bodyType)
-                                <option value="{{ $bodyType }}" @selected(old('body_type') === $bodyType)>
+                                <option class="bg-slate-950" value="{{ $bodyType }}" @selected(old('body_type') === $bodyType)>
                                     {{ $bodyType }}
                                 </option>
                             @endforeach
                         </select>
-                        @error('body_type') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                        @error('body_type') <p class="mt-1 text-sm text-red-300">{{ $message }}</p> @enderror
                     </div>
 
                     <div>
-                        <label class="text-sm font-semibold text-slate-800">Atrašanās vieta</label>
+                        <label class="text-sm font-bold text-slate-300">Atrašanās vieta</label>
                         <input
                             name="location"
                             value="{{ old('location') }}"
-                            class="mt-2 w-full rounded-xl border-slate-300 bg-white focus:border-amber-400 focus:ring-amber-200"
+                            class="mt-2 w-full rounded-2xl border-white/10 bg-slate-950/70 text-white placeholder:text-slate-500 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
                             placeholder="Piemēram: Rīga"
                         >
-                        @error('location') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                        @error('location') <p class="mt-1 text-sm text-red-300">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="sm:col-span-2">
-                        <label class="text-sm font-semibold text-slate-800">Kontakti</label>
+                        <label class="text-sm font-bold text-slate-300">Kontakti</label>
                         <input
                             name="contacts"
                             value="{{ old('contacts') }}"
-                            class="mt-2 w-full rounded-xl border-slate-300 bg-white focus:border-amber-400 focus:ring-amber-200"
+                            class="mt-2 w-full rounded-2xl border-white/10 bg-slate-950/70 text-white placeholder:text-slate-500 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
                             placeholder="Piemēram: +371 20000000 vai epasts"
                         >
-                        @error('contacts') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                        @error('contacts') <p class="mt-1 text-sm text-red-300">{{ $message }}</p> @enderror
                     </div>
                 </div>
             </section>
 
             <section>
                 <div>
-                    <h2 class="text-lg font-semibold text-slate-950">
+                    <h2 class="text-2xl font-black uppercase tracking-tight text-white"
+                        style="font-family:'Bebas Neue', sans-serif;">
                         Attēli
                     </h2>
                     <p class="mt-1 text-sm text-slate-500">
@@ -401,24 +412,24 @@
 
                 <div class="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
                     <template x-for="(image, index) in previews" :key="index">
-                        <div class="relative aspect-square overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
+                        <div class="relative aspect-square overflow-hidden rounded-2xl border border-white/10 bg-slate-900">
                             <img :src="image.url" :alt="image.name" class="h-full w-full object-cover">
 
                             <button
                                 type="button"
                                 @click="removeImage(index)"
-                                class="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/70 text-sm font-bold text-white hover:bg-red-600"
+                                class="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/70 text-sm font-bold text-white transition hover:bg-red-600"
                             >
                                 ×
                             </button>
 
-                            <div class="absolute inset-x-0 bottom-0 bg-black/55 px-2 py-1">
+                            <div class="absolute inset-x-0 bottom-0 bg-black/60 px-2 py-1">
                                 <p class="truncate text-[11px] text-white" x-text="image.name"></p>
                             </div>
 
                             <div
                                 x-show="index === 0"
-                                class="absolute left-2 top-2 rounded-full bg-amber-300 px-2 py-1 text-[10px] font-bold text-slate-950"
+                                class="absolute left-2 top-2 rounded-full bg-amber-400 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-slate-950"
                             >
                                 Galvenais
                             </div>
@@ -428,13 +439,13 @@
                     <label
                         for="images"
                         x-show="files.length < 10"
-                        class="group flex aspect-square cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 text-center transition hover:border-amber-400 hover:bg-amber-50"
+                        class="group flex aspect-square cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-white/15 bg-slate-950/50 text-center transition hover:border-amber-400/60 hover:bg-amber-400/10"
                     >
-                        <span class="text-3xl font-light text-slate-400 group-hover:text-amber-500">+</span>
-                        <span class="mt-2 px-2 text-xs font-semibold text-slate-600">
+                        <span class="text-4xl font-light text-slate-500 group-hover:text-amber-300">+</span>
+                        <span class="mt-2 px-2 text-xs font-bold text-slate-300">
                             Pievienot
                         </span>
-                        <span class="mt-1 px-2 text-[11px] text-slate-400">
+                        <span class="mt-1 px-2 text-[11px] text-slate-500">
                             <span x-text="files.length"></span>/10
                         </span>
                     </label>
@@ -451,12 +462,13 @@
                     @change="addImages($event)"
                 >
 
-                @error('images') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
-                @error('images.*') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
+                @error('images') <p class="mt-2 text-sm text-red-300">{{ $message }}</p> @enderror
+                @error('images.*') <p class="mt-2 text-sm text-red-300">{{ $message }}</p> @enderror
             </section>
 
-            <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                <h2 class="text-lg font-semibold text-slate-950">
+            <section class="rounded-3xl border border-white/10 bg-slate-950/50 p-5">
+                <h2 class="text-2xl font-black uppercase tracking-tight text-white"
+                    style="font-family:'Bebas Neue', sans-serif;">
                     Pārdošanas veids
                 </h2>
 
@@ -467,7 +479,7 @@
                 <div class="mt-5 grid gap-4 sm:grid-cols-2">
                     <label
                         class="cursor-pointer rounded-2xl border p-4 transition"
-                        :class="!isAuction ? 'border-slate-950 bg-slate-950 text-white' : 'border-slate-200 bg-slate-50 text-slate-900'"
+                        :class="!isAuction ? 'border-amber-400 bg-amber-400 text-slate-950 shadow-lg shadow-amber-400/20' : 'border-white/10 bg-slate-950/70 text-slate-300 hover:bg-white/5'"
                     >
                         <input
                             type="radio"
@@ -477,7 +489,7 @@
                             :checked="!isAuction"
                             @change="isAuction = false"
                         >
-                        <span class="block text-sm font-bold">Fiksēta cena</span>
+                        <span class="block text-sm font-black uppercase tracking-wider">Fiksēta cena</span>
                         <span class="mt-1 block text-xs opacity-70">
                             Parasts sludinājums ar noteiktu pārdošanas cenu.
                         </span>
@@ -485,7 +497,7 @@
 
                     <label
                         class="cursor-pointer rounded-2xl border p-4 transition"
-                        :class="isAuction ? 'border-amber-300 bg-amber-50 text-slate-950' : 'border-slate-200 bg-slate-50 text-slate-900'"
+                        :class="isAuction ? 'border-amber-400 bg-amber-400 text-slate-950 shadow-lg shadow-amber-400/20' : 'border-white/10 bg-slate-950/70 text-slate-300 hover:bg-white/5'"
                     >
                         <input
                             type="radio"
@@ -495,7 +507,7 @@
                             :checked="isAuction"
                             @change="isAuction = true"
                         >
-                        <span class="block text-sm font-bold">Izsole</span>
+                        <span class="block text-sm font-black uppercase tracking-wider">Izsole</span>
                         <span class="mt-1 block text-xs opacity-70">
                             Lietotāji var solīt augstāku cenu līdz izsoles beigām.
                         </span>
@@ -503,7 +515,7 @@
                 </div>
 
                 <div x-show="!isAuction" x-cloak class="mt-5">
-                    <label class="text-sm font-semibold text-slate-800">
+                    <label class="text-sm font-bold text-slate-300">
                         Cena
                     </label>
 
@@ -512,22 +524,22 @@
                         step="0.01"
                         name="price"
                         value="{{ old('price') }}"
-                        class="mt-2 w-full rounded-xl border-slate-300 focus:border-amber-400 focus:ring-amber-200"
+                        class="mt-2 w-full rounded-2xl border-white/10 bg-slate-950/70 text-white placeholder:text-slate-500 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
                         placeholder="Piemēram: 8500.00"
                         :disabled="isAuction"
                     >
 
-                    @error('price') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                    @error('price') <p class="mt-1 text-sm text-red-300">{{ $message }}</p> @enderror
                 </div>
 
                 <div
                     x-show="isAuction"
                     x-cloak
-                    class="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-4"
+                    class="mt-5 rounded-2xl border border-amber-400/20 bg-amber-400/10 p-4"
                 >
                     <div class="grid gap-4 sm:grid-cols-2">
                         <div>
-                            <label class="text-sm font-semibold text-slate-800">
+                            <label class="text-sm font-bold text-slate-300">
                                 Sākumcena
                             </label>
 
@@ -536,17 +548,36 @@
                                 step="0.01"
                                 name="starting_bid"
                                 value="{{ old('starting_bid') }}"
-                                class="mt-2 w-full rounded-xl border-slate-300 bg-white focus:border-amber-400 focus:ring-amber-200"
+                                class="mt-2 w-full rounded-2xl border-white/10 bg-slate-950/70 text-white placeholder:text-slate-500 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
                                 placeholder="Piemēram: 5000.00"
                                 @input="enableAuction()"
                                 :disabled="!isAuction"
                             >
 
-                            @error('starting_bid') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                            @error('starting_bid') <p class="mt-1 text-sm text-red-300">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
-                            <label class="text-sm font-semibold text-slate-800">
+                            <label class="text-sm font-bold text-slate-300">
+                                Izpirkuma cena
+                            </label>
+
+                            <input
+                                type="number"
+                                step="0.01"
+                                name="buyout_price"
+                                value="{{ old('buyout_price') }}"
+                                class="mt-2 w-full rounded-2xl border-white/10 bg-slate-950/70 text-white placeholder:text-slate-500 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
+                                placeholder="Piemēram: 6500.00"
+                                @input="enableAuction()"
+                                :disabled="!isAuction"
+                            >
+
+                            @error('buyout_price') <p class="mt-1 text-sm text-red-300">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label class="text-sm font-bold text-slate-300">
                                 Beigu datums / laiks
                             </label>
 
@@ -554,30 +585,30 @@
                                 type="datetime-local"
                                 name="auction_ends_at"
                                 value="{{ old('auction_ends_at') }}"
-                                class="mt-2 w-full rounded-xl border-slate-300 bg-white focus:border-amber-400 focus:ring-amber-200"
+                                class="mt-2 w-full rounded-2xl border-white/10 bg-slate-950/70 text-white placeholder:text-slate-500 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
                                 @input="enableAuction()"
                                 :disabled="!isAuction"
                             >
 
-                            @error('auction_ends_at') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                            @error('auction_ends_at') <p class="mt-1 text-sm text-red-300">{{ $message }}</p> @enderror
                         </div>
                     </div>
 
-                    <p class="mt-3 text-xs text-amber-800">
-                        Izsoles sludinājumam parastā cena netiek saglabāta. Tiek izmantota sākumcena un pašreizējā izsoles cena.
+                    <p class="mt-3 text-xs text-amber-200/80">
+                        Izsoles sludinājumam parastā cena netiek saglabāta. Tiek izmantota sākumcena, izpirkuma cena un pašreizējā izsoles cena.
                     </p>
                 </div>
             </section>
 
-            <div class="flex items-center justify-end gap-3 border-t border-slate-200 pt-5">
+            <div class="flex items-center justify-end gap-3 border-t border-white/10 pt-5">
                 <a href="{{ route('ads.index') }}"
-                   class="rounded-xl px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100">
+                   class="rounded-2xl px-4 py-2.5 text-sm font-bold text-slate-300 transition hover:bg-white/10 hover:text-white">
                     Atcelt
                 </a>
 
                 <button
                     type="submit"
-                    class="rounded-xl bg-slate-950 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
+                    class="rounded-2xl bg-amber-400 px-5 py-2.5 text-sm font-black uppercase tracking-wider text-slate-950 shadow-lg shadow-amber-400/20 transition hover:bg-amber-300 active:scale-95"
                 >
                     Saglabāt sludinājumu
                 </button>

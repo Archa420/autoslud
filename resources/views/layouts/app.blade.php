@@ -7,28 +7,29 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="min-h-screen bg-slate-50 text-slate-900 selection:bg-amber-200/70 selection:text-slate-900">
-    {{-- Subtle premium background --}}
-    <div aria-hidden="true" class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div class="absolute -top-28 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-amber-300/25 blur-3xl"></div>
-        <div class="absolute top-24 -left-24 h-[420px] w-[420px] rounded-full bg-indigo-300/20 blur-3xl"></div>
-        <div class="absolute -bottom-36 right-0 h-[520px] w-[520px] rounded-full bg-emerald-300/15 blur-3xl"></div>
-        <div class="absolute inset-0 bg-gradient-to-b from-white via-slate-50 to-slate-100"></div>
+<body class="min-h-screen bg-slate-950 text-white selection:bg-amber-400/70 selection:text-slate-950">
+
+    <div aria-hidden="true" class="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-slate-950">
+        <div class="absolute -top-32 left-1/2 h-[560px] w-[560px] -translate-x-1/2 rounded-full bg-amber-400/10 blur-3xl"></div>
+        <div class="absolute top-28 -left-28 h-[460px] w-[460px] rounded-full bg-blue-700/20 blur-3xl"></div>
+        <div class="absolute -bottom-40 right-0 h-[560px] w-[560px] rounded-full bg-slate-700/25 blur-3xl"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-950 to-slate-900"></div>
+        <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.025)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.025)_1px,transparent_1px)] bg-[size:48px_48px]"></div>
     </div>
 
     @include('partials.header')
 
-    <main class="mx-auto max-w-6xl px-4 py-8">
+    <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         @yield('content')
     </main>
 
-    {{-- Tiny custom animation keyframes (global) --}}
     <style>
         @keyframes shimmer {
-            0% { transform: translateX(-140%) rotate(12deg); }
-            60% { transform: translateX(260%) rotate(12deg); }
+            0%   { transform: translateX(-140%) rotate(12deg); }
+            60%  { transform: translateX(260%) rotate(12deg); }
             100% { transform: translateX(260%) rotate(12deg); }
         }
     </style>
+
 </body>
 </html>

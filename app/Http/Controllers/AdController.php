@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Ad;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
@@ -57,7 +58,12 @@ class AdController extends Controller
 
         $ads = Ad::query()
             ->with(['primaryImage', 'images', 'auction'])
-
+            ->where(function ($query) {
+                $query->whereDoesntHave('auction')
+                    ->orWhereHas('auction', function ($auctionQuery) {
+                        $auctionQuery->where('status', 'active');
+                    });
+            })
             ->when($q, function ($query) use ($q) {
                 $query->where(function ($qq) use ($q) {
                     $qq->where('title', 'like', "%{$q}%")
@@ -66,43 +72,35 @@ class AdController extends Controller
                         ->orWhere('model', 'like', "%{$q}%");
                 });
             })
-
             ->when($type === 'auction', function ($query) {
-                $query->whereHas('auction');
+                $query->whereHas('auction', function ($auctionQuery) {
+                    $auctionQuery->where('status', 'active');
+                });
             })
-
             ->when($type === 'fixed', function ($query) {
                 $query->whereDoesntHave('auction');
             })
-
             ->when($brand, function ($query) use ($brand) {
                 $query->where('brand', $brand);
             })
-
             ->when($model, function ($query) use ($model) {
                 $query->where('model', $model);
             })
-
             ->when($location, function ($query) use ($location) {
                 $query->where('location', 'like', "%{$location}%");
             })
-
             ->when($yearFrom !== null && $yearFrom !== '', function ($query) use ($yearFrom) {
                 $query->where('year', '>=', $yearFrom);
             })
-
             ->when($yearTo !== null && $yearTo !== '', function ($query) use ($yearTo) {
                 $query->where('year', '<=', $yearTo);
             })
-
             ->when($fuelType, function ($query) use ($fuelType) {
                 $query->where('fuel_type', $fuelType);
             })
-
             ->when($gearboxType, function ($query) use ($gearboxType) {
                 $query->where('gearbox_type', $gearboxType);
             })
-
             ->when($priceFrom !== null && $priceFrom !== '', function ($query) use ($priceFrom) {
                 $query->where(function ($qq) use ($priceFrom) {
                     $qq->where(function ($q1) use ($priceFrom) {
@@ -119,7 +117,6 @@ class AdController extends Controller
                     });
                 });
             })
-
             ->when($priceTo !== null && $priceTo !== '', function ($query) use ($priceTo) {
                 $query->where(function ($qq) use ($priceTo) {
                     $qq->where(function ($q1) use ($priceTo) {
@@ -136,7 +133,6 @@ class AdController extends Controller
                     });
                 });
             })
-
             ->latest()
             ->paginate(12)
             ->withQueryString();
@@ -154,17 +150,32 @@ class AdController extends Controller
         $ad->load([
             'primaryImage',
             'images',
+            'user',
             'auction.bids.user',
             'auction.highestBid.user',
+            'auction.winner',
             'favorites',
         ]);
+
+        $auction = $ad->auction;
+
+        if ($auction && $auction->status === 'finished') {
+            $user = Auth::user();
+
+            $isSeller = $user && $ad->user_id === $user->id;
+            $isWinner = $user && $auction->winner_user_id === $user->id;
+
+            if (! $isSeller && ! $isWinner) {
+                abort(404);
+            }
+        }
 
         return view('ads.show', compact('ad'));
     }
 
     public function store(Request $request)
     {
-        if (!$request->user()) {
+        if (! $request->user()) {
             abort(403);
         }
 
@@ -198,10 +209,12 @@ class AdController extends Controller
         if ($isAuction) {
             $rules['price'] = ['nullable', 'numeric', 'min:0'];
             $rules['starting_bid'] = ['required', 'numeric', 'min:1'];
+            $rules['buyout_price'] = ['required', 'numeric', 'gt:starting_bid'];
             $rules['auction_ends_at'] = ['required', 'date', 'after:now'];
         } else {
             $rules['price'] = ['required', 'numeric', 'min:1'];
             $rules['starting_bid'] = ['nullable', 'numeric', 'min:0'];
+            $rules['buyout_price'] = ['nullable', 'numeric', 'min:0'];
             $rules['auction_ends_at'] = ['nullable', 'date'];
         }
 
@@ -212,6 +225,8 @@ class AdController extends Controller
             'price.min' => 'Cenai jābūt vismaz 1 €.',
             'starting_bid.required' => 'Izsoles sludinājumam sākumcena ir obligāta.',
             'starting_bid.min' => 'Sākumcenai jābūt vismaz 1 €.',
+            'buyout_price.required' => 'Izpirkuma cena ir obligāta.',
+            'buyout_price.gt' => 'Izpirkuma cenai jābūt lielākai par sākumcenu.',
             'auction_ends_at.required' => 'Izsoles beigu datums ir obligāts.',
             'auction_ends_at.after' => 'Izsoles beigu datumam jābūt nākotnē.',
             'images.max' => 'Var pievienot ne vairāk kā 10 attēlus.',
@@ -246,7 +261,8 @@ class AdController extends Controller
                 $ad->auction()->create([
                     'starting_bid' => $data['starting_bid'],
                     'current_bid' => null,
-                    'minimum_bid_step' => 1.00,
+                    'minimum_bid_step' => 50.00,
+                    'buyout_price' => $data['buyout_price'],
                     'starts_at' => now(),
                     'ends_at' => $data['auction_ends_at'],
                     'status' => 'active',
@@ -272,7 +288,7 @@ class AdController extends Controller
 
     public function edit(Request $request, Ad $ad)
     {
-        if (!$request->user() || $request->user()->id !== $ad->user_id) {
+        if (! $request->user() || $request->user()->id !== $ad->user_id) {
             abort(403);
         }
 
@@ -283,7 +299,7 @@ class AdController extends Controller
 
     public function update(Request $request, Ad $ad)
     {
-        if (!$request->user() || $request->user()->id !== $ad->user_id) {
+        if (! $request->user() || $request->user()->id !== $ad->user_id) {
             abort(403);
         }
 
@@ -316,9 +332,11 @@ class AdController extends Controller
         if ($hasAuction) {
             $rules['price'] = ['nullable', 'numeric', 'min:0'];
             $rules['starting_bid'] = ['required', 'numeric', 'min:1'];
+            $rules['buyout_price'] = ['required', 'numeric', 'gt:starting_bid'];
             $rules['auction_ends_at'] = ['required', 'date'];
         } else {
             $rules['price'] = ['required', 'numeric', 'min:1'];
+            $rules['buyout_price'] = ['nullable', 'numeric', 'min:0'];
         }
 
         $data = $request->validate($rules, [
@@ -328,6 +346,8 @@ class AdController extends Controller
             'price.min' => 'Cenai jābūt vismaz 1 €.',
             'starting_bid.required' => 'Izsoles sākumcena ir obligāta.',
             'starting_bid.min' => 'Sākumcenai jābūt vismaz 1 €.',
+            'buyout_price.required' => 'Izpirkuma cena ir obligāta.',
+            'buyout_price.gt' => 'Izpirkuma cenai jābūt lielākai par sākumcenu.',
             'auction_ends_at.required' => 'Izsoles beigu datums ir obligāts.',
             'images.max' => 'Var pievienot ne vairāk kā 10 attēlus.',
             'images.*.image' => 'Failam jābūt attēlam.',
@@ -358,6 +378,7 @@ class AdController extends Controller
             if ($hasAuction && $ad->auction) {
                 $ad->auction->update([
                     'starting_bid' => $data['starting_bid'],
+                    'buyout_price' => $data['buyout_price'],
                     'ends_at' => $data['auction_ends_at'],
                 ]);
             }
@@ -382,7 +403,7 @@ class AdController extends Controller
 
     public function destroy(Request $request, Ad $ad)
     {
-        if (!$request->user() || $request->user()->id !== $ad->user_id) {
+        if (! $request->user() || $request->user()->id !== $ad->user_id) {
             abort(403);
         }
 

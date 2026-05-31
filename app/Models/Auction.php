@@ -14,6 +14,7 @@ class Auction extends Model
         'starting_bid',
         'current_bid',
         'minimum_bid_step',
+        'buyout_price',
         'starts_at',
         'ends_at',
         'status',
@@ -24,21 +25,26 @@ class Auction extends Model
         'starting_bid' => 'decimal:2',
         'current_bid' => 'decimal:2',
         'minimum_bid_step' => 'decimal:2',
+        'buyout_price' => 'decimal:2',
         'starts_at' => 'datetime',
         'ends_at' => 'datetime',
     ];
+
     public function ad(): BelongsTo
     {
         return $this->belongsTo(Ad::class);
     }
+
     public function bids(): HasMany
     {
         return $this->hasMany(Bid::class);
     }
+
     public function highestBid(): HasOne
     {
         return $this->hasOne(Bid::class)->ofMany('amount', 'max');
     }
+
     public function winner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'winner_user_id');

@@ -1,12 +1,12 @@
-<nav x-data="{ open: false }" class="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur-xl shadow-sm">
+<nav x-data="{ open: false }" class="sticky top-0 z-50 border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
     @php
         $navBase = 'inline-flex h-10 items-center rounded-xl px-4 text-sm font-semibold transition duration-150 ease-in-out';
-        $navActive = 'bg-blue-600 text-white shadow-sm shadow-blue-600/20';
-        $navInactive = 'text-slate-600 hover:bg-blue-50 hover:text-blue-700';
+        $navActive = 'bg-amber-400 text-slate-950 shadow-sm shadow-amber-400/20';
+        $navInactive = 'text-slate-300 hover:bg-white/10 hover:text-white';
 
         $responsiveBase = 'flex h-12 items-center border-l-4 px-4 text-base font-semibold transition duration-150 ease-in-out';
-        $responsiveActive = 'border-blue-600 bg-blue-50 text-blue-700';
-        $responsiveInactive = 'border-transparent text-slate-600 hover:border-blue-300 hover:bg-slate-50 hover:text-blue-700';
+        $responsiveActive = 'border-amber-400 bg-amber-400/10 text-amber-300';
+        $responsiveInactive = 'border-transparent text-slate-300 hover:border-amber-400/50 hover:bg-white/5 hover:text-white';
 
         $actionBase = 'inline-flex h-10 items-center justify-center rounded-xl px-4 text-sm font-semibold transition duration-150 ease-in-out';
 
@@ -17,29 +17,21 @@
         $isAdsCreate = request()->routeIs('ads.create');
         $isMessages = request()->routeIs('messages.index') || request()->routeIs('messages.*');
         $isAdmin = request()->routeIs('admin.*');
+        $isSubscription = request()->routeIs('auction-subscription.*');
     @endphp
 
-    <!-- Primary Navigation Menu -->
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="flex h-16 justify-between">
 
             <div class="flex">
-                <!-- Logo -->
                 <div class="flex shrink-0 items-center">
-                    <a href="{{ route('home') }}" class="inline-flex items-center gap-3">
-                        <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-600 text-sm font-black text-white shadow-sm shadow-blue-600/30">
-                            AS
-                        </span>
-
-                        <span class="hidden leading-tight sm:block">
-                            <span class="block text-base font-bold text-slate-900">
-                                Autoslud
-                            </span>
-                        </span>
+                    <a href="{{ route('home') }}"
+                       class="bg-gradient-to-r from-white via-amber-200 to-amber-400 bg-clip-text text-3xl font-black uppercase tracking-[0.2em] text-transparent transition hover:opacity-80"
+                       style="font-family:'Bebas Neue', sans-serif;">
+                        Autoslud
                     </a>
                 </div>
 
-                <!-- Navigation Links -->
                 <div class="hidden items-center space-x-2 sm:ms-10 sm:flex">
                     <a href="{{ route('home') }}"
                        class="{{ $navBase }} {{ $isHome ? $navActive : $navInactive }}">
@@ -58,8 +50,8 @@
 
                     @auth
                         <a href="{{ route('dashboard') }}"
-                           class="{{ $navBase }} {{ $navInactive }}">
-                            Mans profils
+                           class="{{ $navBase }} {{ request()->routeIs('dashboard') ? $navActive : $navInactive }}">
+                            Mans panelis
                         </a>
 
                         <a href="{{ route('favorites.index') }}"
@@ -72,6 +64,11 @@
                             Pievienot
                         </a>
 
+                        <a href="{{ route('auction-subscription.index') }}"
+                           class="{{ $navBase }} {{ $isSubscription ? $navActive : (auth()->user()->hasAuctionSubscription() ? 'text-emerald-300 hover:bg-emerald-500/10 hover:text-emerald-200' : $navInactive) }}">
+                            {{ auth()->user()->hasAuctionSubscription() ? 'Abonements aktīvs' : 'Abonements' }}
+                        </a>
+
                         @if(Route::has('messages.index'))
                             <a href="{{ route('messages.index') }}"
                                class="{{ $navBase }} {{ $isMessages ? $navActive : $navInactive }}">
@@ -81,7 +78,7 @@
 
                         @if(auth()->user()->role === 'admin')
                             <a href="{{ route('admin.users') }}"
-                               class="{{ $navBase }} {{ $isAdmin ? 'bg-amber-500 text-white shadow-sm shadow-amber-500/20' : 'text-amber-600 hover:bg-amber-50 hover:text-amber-700' }}">
+                               class="{{ $navBase }} {{ $isAdmin ? 'bg-red-500 text-white shadow-sm shadow-red-500/20' : 'text-red-300 hover:bg-red-500/10 hover:text-red-200' }}">
                                 Admin
                             </a>
                         @endif
@@ -89,11 +86,10 @@
                 </div>
             </div>
 
-            <!-- Right Side - bez dropdown -->
             <div class="hidden items-center sm:ms-6 sm:flex">
                 @auth
                     <div class="flex items-center gap-3">
-                        <span class="hidden text-sm font-semibold text-slate-600 lg:inline">
+                        <span class="hidden text-sm font-semibold text-slate-300 lg:inline">
                             {{ Auth::user()->name }}
                         </span>
 
@@ -101,7 +97,7 @@
                             @csrf
 
                             <button type="submit"
-                                    class="{{ $actionBase }} border border-slate-200 bg-white text-slate-600 hover:border-red-200 hover:bg-red-50 hover:text-red-600">
+                                    class="{{ $actionBase }} border border-white/10 bg-white/5 text-slate-300 hover:border-red-400/40 hover:bg-red-500/10 hover:text-red-300">
                                 Iziet
                             </button>
                         </form>
@@ -109,13 +105,13 @@
                 @else
                     <div class="flex items-center gap-2">
                         <a href="{{ route('login') }}"
-                           class="{{ $actionBase }} text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+                           class="{{ $actionBase }} text-slate-300 hover:bg-white/10 hover:text-white">
                             Pieslēgties
                         </a>
 
                         @if (Route::has('register'))
                             <a href="{{ route('register') }}"
-                               class="{{ $actionBase }} bg-blue-600 text-white shadow-sm shadow-blue-600/20 hover:bg-blue-700">
+                               class="{{ $actionBase }} bg-amber-400 text-slate-950 shadow-sm shadow-amber-400/20 hover:bg-amber-300">
                                 Reģistrēties
                             </a>
                         @endif
@@ -123,10 +119,9 @@
                 @endauth
             </div>
 
-            <!-- Hamburger -->
             <div class="-me-2 flex items-center sm:hidden">
                 <button @click="open = ! open"
-                        class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:bg-blue-50 hover:text-blue-700">
+                        class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-300 transition hover:bg-white/10 hover:text-white">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path :class="{'hidden': open, 'inline-flex': ! open }"
                               class="inline-flex"
@@ -147,8 +142,7 @@
         </div>
     </div>
 
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden border-t border-slate-200 bg-white sm:hidden">
+    <div :class="{'block': open, 'hidden': ! open}" class="hidden border-t border-white/10 bg-slate-950/95 backdrop-blur-xl sm:hidden">
 
         <div class="space-y-1 py-3">
             <a href="{{ route('home') }}"
@@ -168,8 +162,8 @@
 
             @auth
                 <a href="{{ route('dashboard') }}"
-                   class="{{ $responsiveBase }} {{ $responsiveInactive }}">
-                    Mani sludinājumi
+                   class="{{ $responsiveBase }} {{ request()->routeIs('dashboard') ? $responsiveActive : $responsiveInactive }}">
+                    Mans panelis
                 </a>
 
                 <a href="{{ route('favorites.index') }}"
@@ -182,6 +176,11 @@
                     Pievienot sludinājumu
                 </a>
 
+                <a href="{{ route('auction-subscription.index') }}"
+                   class="{{ $responsiveBase }} {{ $isSubscription ? $responsiveActive : (auth()->user()->hasAuctionSubscription() ? 'border-emerald-400 bg-emerald-500/10 text-emerald-300' : $responsiveInactive) }}">
+                    {{ auth()->user()->hasAuctionSubscription() ? 'Abonements aktīvs' : 'Izsoļu abonements' }}
+                </a>
+
                 @if(Route::has('messages.index'))
                     <a href="{{ route('messages.index') }}"
                        class="{{ $responsiveBase }} {{ $isMessages ? $responsiveActive : $responsiveInactive }}">
@@ -191,7 +190,7 @@
 
                 @if(auth()->user()->role === 'admin')
                     <a href="{{ route('admin.users') }}"
-                       class="{{ $responsiveBase }} {{ $isAdmin ? 'border-amber-500 bg-amber-50 text-amber-700' : 'border-transparent text-amber-600 hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700' }}">
+                       class="{{ $responsiveBase }} {{ $isAdmin ? 'border-red-400 bg-red-500/10 text-red-300' : 'border-transparent text-red-300 hover:border-red-400/50 hover:bg-red-500/10 hover:text-red-200' }}">
                         Admin
                     </a>
                 @endif
@@ -199,9 +198,9 @@
         </div>
 
         @auth
-            <div class="border-t border-slate-200 px-4 py-4">
+            <div class="border-t border-white/10 px-4 py-4">
                 <div>
-                    <div class="font-semibold text-slate-800">
+                    <div class="font-semibold text-white">
                         {{ Auth::user()->name }}
                     </div>
                     <div class="text-sm font-medium text-slate-500">
@@ -211,7 +210,7 @@
 
                 <div class="mt-4 grid grid-cols-2 gap-3">
                     <a href="{{ route('profile.edit') }}"
-                       class="flex h-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
+                       class="flex h-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-sm font-semibold text-slate-300 transition hover:bg-white/10 hover:text-white">
                         Profils
                     </a>
 
@@ -219,22 +218,22 @@
                         @csrf
 
                         <button type="submit"
-                                class="flex h-11 w-full items-center justify-center rounded-xl border border-red-200 bg-red-50 text-sm font-semibold text-red-600 transition hover:bg-red-100">
+                                class="flex h-11 w-full items-center justify-center rounded-xl border border-red-400/30 bg-red-500/10 text-sm font-semibold text-red-300 transition hover:bg-red-500/20">
                             Iziet
                         </button>
                     </form>
                 </div>
             </div>
         @else
-            <div class="grid grid-cols-2 gap-3 border-t border-slate-200 px-4 py-4">
+            <div class="grid grid-cols-2 gap-3 border-t border-white/10 px-4 py-4">
                 <a href="{{ route('login') }}"
-                   class="flex h-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
+                   class="flex h-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-sm font-semibold text-slate-300 transition hover:bg-white/10 hover:text-white">
                     Pieslēgties
                 </a>
 
                 @if (Route::has('register'))
                     <a href="{{ route('register') }}"
-                       class="flex h-11 items-center justify-center rounded-xl bg-blue-600 text-sm font-semibold text-white shadow-sm shadow-blue-600/20 transition hover:bg-blue-700">
+                       class="flex h-11 items-center justify-center rounded-xl bg-amber-400 text-sm font-semibold text-slate-950 shadow-sm shadow-amber-400/20 transition hover:bg-amber-300">
                         Reģistrēties
                     </a>
                 @endif

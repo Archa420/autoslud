@@ -18,7 +18,9 @@ class ProfileController extends Controller
         $userBids = $user->bids()
             ->with([
                 'auction.ad.images',
-                'auction.highestBid',
+                'auction.ad.primaryImage',
+                'auction.highestBid.user',
+                'auction.winner',
             ])
             ->latest()
             ->get()

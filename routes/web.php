@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuctionController;
+use App\Http\Controllers\AuctionSubscriptionController;
 use App\Http\Controllers\BidController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\MessageController;
@@ -113,7 +114,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         $ads = $user
             ->ads()
-            ->with(['primaryImage', 'images', 'auction'])
+            ->with(['primaryImage', 'images', 'auction.highestBid.user', 'auction.winner'])
             ->latest()
             ->paginate(12);
 
@@ -122,7 +123,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->with([
                 'auction.ad.primaryImage',
                 'auction.ad.images',
-                'auction.highestBid',
+                'auction.highestBid.user',
+                'auction.winner',
             ])
             ->latest()
             ->get()
@@ -130,6 +132,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         return view('dashboard', compact('ads', 'userBids'));
     })->name('dashboard');
+
+    Route::get('/auction-subscription', [AuctionSubscriptionController::class, 'index'])
+        ->name('auction-subscription.index');
+
+    Route::post('/auction-subscription/checkout', [AuctionSubscriptionController::class, 'checkout'])
+        ->name('auction-subscription.checkout');
+
+    Route::get('/auction-subscription/success', [AuctionSubscriptionController::class, 'success'])
+        ->name('auction-subscription.success');
+
+    Route::get('/auction-subscription/cancel', [AuctionSubscriptionController::class, 'cancel'])
+        ->name('auction-subscription.cancel');
 
     Route::post('/izsoles/{auction}/bid', [BidController::class, 'store'])
         ->whereNumber('auction')

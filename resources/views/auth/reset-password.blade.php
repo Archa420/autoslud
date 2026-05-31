@@ -1,39 +1,114 @@
-<x-guest-layout>
-    <form method="POST" action="{{ route('password.store') }}">
-        @csrf
+@extends('layouts.app')
 
-        <!-- Password Reset Token -->
-        <input type="hidden" name="token" value="{{ $request->route('token') }}">
+@section('content')
+<div class="mx-auto flex min-h-[calc(100vh-10rem)] max-w-md items-center py-10 text-white">
+    <div class="w-full rounded-3xl border border-white/10 bg-white/[.05] p-6 shadow-2xl shadow-black/20 backdrop-blur-xl">
+        <div class="mb-7">
+            <div class="mb-3 inline-flex items-center gap-2 rounded-full border border-amber-400/20 bg-amber-400/10 px-4 py-1.5">
+                <span class="h-1.5 w-1.5 rounded-full bg-amber-400"></span>
+                <span class="text-xs font-bold uppercase tracking-[0.18em] text-amber-200/80">
+                    Jauna parole
+                </span>
+            </div>
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email', $request->email)" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            <h1 class="text-4xl font-black uppercase tracking-tight text-white md:text-5xl"
+                style="font-family:'Bebas Neue', sans-serif;">
+                Atjaunot paroli
+            </h1>
+
+            <p class="mt-2 text-sm leading-relaxed text-slate-400">
+                Ievadi savu e-pastu un jauno paroli, lai atjaunotu piekļuvi kontam.
+            </p>
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-            <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+        <form method="POST" action="{{ route('password.store') }}" class="space-y-5">
+            @csrf
 
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+            <input type="hidden" name="token" value="{{ $request->route('token') }}">
 
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                                type="password"
-                                name="password_confirmation" required autocomplete="new-password" />
+            <div>
+                <label for="email" class="block text-sm font-bold text-slate-300">
+                    E-pasts
+                </label>
 
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
+                <input
+                    id="email"
+                    type="email"
+                    name="email"
+                    value="{{ old('email', $request->email) }}"
+                    required
+                    autofocus
+                    autocomplete="username"
+                    class="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
+                    placeholder="epasts@piemers.lv"
+                >
 
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Reset Password') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+                @error('email')
+                    <p class="mt-2 text-sm font-medium text-red-300">
+                        {{ $message }}
+                    </p>
+                @enderror
+            </div>
+
+            <div>
+                <label for="password" class="block text-sm font-bold text-slate-300">
+                    Jaunā parole
+                </label>
+
+                <input
+                    id="password"
+                    type="password"
+                    name="password"
+                    required
+                    autocomplete="new-password"
+                    class="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
+                    placeholder="Ievadi jauno paroli"
+                >
+
+                @error('password')
+                    <p class="mt-2 text-sm font-medium text-red-300">
+                        {{ $message }}
+                    </p>
+                @enderror
+            </div>
+
+            <div>
+                <label for="password_confirmation" class="block text-sm font-bold text-slate-300">
+                    Apstiprini jauno paroli
+                </label>
+
+                <input
+                    id="password_confirmation"
+                    type="password"
+                    name="password_confirmation"
+                    required
+                    autocomplete="new-password"
+                    class="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
+                    placeholder="Atkārtoti ievadi jauno paroli"
+                >
+
+                @error('password_confirmation')
+                    <p class="mt-2 text-sm font-medium text-red-300">
+                        {{ $message }}
+                    </p>
+                @enderror
+            </div>
+
+            <button
+                type="submit"
+                class="w-full rounded-2xl bg-amber-400 px-4 py-3 text-sm font-black uppercase tracking-wider text-slate-950 shadow-lg shadow-amber-400/20 transition hover:bg-amber-300 active:scale-95"
+            >
+                Atjaunot paroli
+            </button>
+
+            <p class="text-center text-sm text-slate-500">
+                Atceries paroli?
+                <a href="{{ route('login') }}"
+                   class="font-bold text-amber-300 transition hover:text-amber-200 hover:underline">
+                    Ielogoties
+                </a>
+            </p>
+        </form>
+    </div>
+</div>
+@endsection

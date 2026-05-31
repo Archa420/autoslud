@@ -1,82 +1,126 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="mx-auto max-w-md py-10">
-    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div class="mb-6">
-            <h1 class="text-2xl font-semibold tracking-tight text-slate-900">Reģistrēties</h1>
-            <p class="mt-1 text-sm text-slate-600">Izveido kontu, lai vari pievienot sludinājumus.</p>
+<div class="mx-auto flex min-h-[calc(100vh-10rem)] max-w-md items-center py-10 text-white">
+    <div class="w-full rounded-3xl border border-white/10 bg-white/[.05] p-6 shadow-2xl shadow-black/20 backdrop-blur-xl">
+        <div class="mb-7">
+            <div class="mb-3 inline-flex items-center gap-2 rounded-full border border-amber-400/20 bg-amber-400/10 px-4 py-1.5">
+                <span class="h-1.5 w-1.5 rounded-full bg-amber-400"></span>
+                <span class="text-xs font-bold uppercase tracking-[0.18em] text-amber-200/80">
+                    Jauns konts
+                </span>
+            </div>
+
+            <h1 class="text-4xl font-black uppercase tracking-tight text-white md:text-5xl"
+                style="font-family:'Bebas Neue', sans-serif;">
+                Reģistrēties
+            </h1>
+
+            <p class="mt-2 text-sm leading-relaxed text-slate-400">
+                Izveido kontu, lai vari pievienot sludinājumus, saglabāt favorītus un piedalīties izsolēs.
+            </p>
         </div>
 
-        <form method="POST" action="{{ route('register') }}" class="space-y-4">
+        <form method="POST" action="{{ route('register') }}" class="space-y-5">
             @csrf
 
             <div>
-                <label class="text-sm font-semibold text-slate-800">Vārds</label>
+                <label for="name" class="block text-sm font-bold text-slate-300">
+                    Vārds
+                </label>
+
                 <input
+                    id="name"
                     type="text"
                     name="name"
                     value="{{ old('name') }}"
                     required
                     autocomplete="name"
-                    class="mt-2 w-full rounded-xl border-slate-300 focus:border-slate-900 focus:ring-slate-900"
+                    class="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
                     placeholder="Jānis Bērziņš"
-                />
+                >
+
                 @error('name')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    <p class="mt-2 text-sm font-medium text-red-300">
+                        {{ $message }}
+                    </p>
                 @enderror
             </div>
 
             <div>
-                <label class="text-sm font-semibold text-slate-800">E-pasts</label>
+                <label for="email" class="block text-sm font-bold text-slate-300">
+                    E-pasts
+                </label>
+
                 <input
+                    id="email"
                     type="email"
                     name="email"
                     value="{{ old('email') }}"
                     required
                     autocomplete="username"
-                    class="mt-2 w-full rounded-xl border-slate-300 focus:border-slate-900 focus:ring-slate-900"
+                    class="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
                     placeholder="epasts@piemers.lv"
-                />
+                >
+
                 @error('email')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    <p class="mt-2 text-sm font-medium text-red-300">
+                        {{ $message }}
+                    </p>
                 @enderror
             </div>
 
             <div>
-                <label class="text-sm font-semibold text-slate-800">Parole</label>
+                <label for="password" class="block text-sm font-bold text-slate-300">
+                    Parole
+                </label>
+
                 <input
+                    id="password"
                     type="password"
                     name="password"
                     required
                     autocomplete="new-password"
-                    class="mt-2 w-full rounded-xl border-slate-300 focus:border-slate-900 focus:ring-slate-900"
-                    placeholder="••••••••"
-                />
+                    class="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
+                    placeholder="Ievadi paroli"
+                >
+
                 @error('password')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    <p class="mt-2 text-sm font-medium text-red-300">
+                        {{ $message }}
+                    </p>
                 @enderror
             </div>
 
             <div>
-                <label class="text-sm font-semibold text-slate-800">Atkārtot paroli</label>
+                <label for="password_confirmation" class="block text-sm font-bold text-slate-300">
+                    Atkārtot paroli
+                </label>
+
                 <input
+                    id="password_confirmation"
                     type="password"
                     name="password_confirmation"
                     required
                     autocomplete="new-password"
-                    class="mt-2 w-full rounded-xl border-slate-300 focus:border-slate-900 focus:ring-slate-900"
-                    placeholder="••••••••"
-                />
+                    class="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
+                    placeholder="Atkārtoti ievadi paroli"
+                >
             </div>
 
-            <button class="w-full rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">
+            <button
+                type="submit"
+                class="w-full rounded-2xl bg-amber-400 px-4 py-3 text-sm font-black uppercase tracking-wider text-slate-950 shadow-lg shadow-amber-400/20 transition hover:bg-amber-300 active:scale-95"
+            >
                 Izveidot kontu
             </button>
 
-            <p class="text-center text-sm text-slate-600">
+            <p class="text-center text-sm text-slate-500">
                 Jau ir konts?
-                <a href="{{ route('login') }}" class="font-semibold text-slate-900 hover:underline">Ielogoties</a>
+                <a href="{{ route('login') }}"
+                   class="font-bold text-amber-300 transition hover:text-amber-200 hover:underline">
+                    Ielogoties
+                </a>
             </p>
         </form>
     </div>
